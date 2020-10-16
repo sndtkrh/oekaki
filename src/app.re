@@ -14,7 +14,7 @@ requireCSS("./app.css");
       svgy: 300.,
       svgx: 500.,
       coordinates: CoordinateSelector.empty,
-      paths: PathSelector.empty
+      paths: EdgeSelector.empty
       } );
     };
 
@@ -24,10 +24,11 @@ requireCSS("./app.css");
 
       <div id="selectors">
         <CoordinateSelector cs={state.coordinates}/>
-        <PathSelector cs={state.paths}/>
+        <EdgeSelector cs={state.paths}/>
       </div>
 
       <div id="message">{React.string("message: ")}</div>
       <Coordinate.Add updater={AppState.addCoordinate(setState)}/>
+      <Edge.Add updater={AppState.addEdge(setState)}/>
     </div>
   };

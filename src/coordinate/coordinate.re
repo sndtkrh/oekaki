@@ -59,7 +59,7 @@ module Add = {
       };
 
       <div>
-          {React.string("Add coordinatee: ")}
+          {React.string("Add coordinate: ")}
       <form onSubmit={handleSubmit}>
           {React.string("name=")}
           <input className="input-name" type_="text" name="name" value={state.name} onChange={handleName} />
