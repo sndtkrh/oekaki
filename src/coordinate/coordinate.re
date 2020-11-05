@@ -13,7 +13,7 @@ module Coordinate : (Cell_selector.Cell with type t = c) = {
       { "(" ++ c.coordinate_id ++ ")"
         ++ " x=" ++ Belt.Float.toString(c.x)
         ++ " y=" ++ Belt.Float.toString(c.y) };
-    <div>
+    <div key={c.coordinate_id}>
       {React.string(s)}
     </div>
   };

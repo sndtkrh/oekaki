@@ -13,8 +13,9 @@ requireCSS("./app.css");
       scale: 50.,
       svgy: 300.,
       svgx: 500.,
+      namePool: AppState.NamePool.empty,
       coordinates: CoordinateSelector.empty,
-      paths: EdgeSelector.empty
+      edges: EdgeSelector.empty
       } );
     };
 
@@ -24,7 +25,7 @@ requireCSS("./app.css");
 
       <div id="selectors">
         <CoordinateSelector cs={state.coordinates}/>
-        <EdgeSelector cs={state.paths}/>
+        <EdgeSelector cs={state.edges}/>
       </div>
 
       <div id="message">{React.string("message: ")}</div>
