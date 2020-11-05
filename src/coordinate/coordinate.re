@@ -53,7 +53,7 @@ module Add = {
         | (Some(x), Some(y)) => {
             updater(state.name, x, y);
             setState( _ => {name: "", x: "", y: ""} );
-            }
+          }
         | _ => ()
         };
       };

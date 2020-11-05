@@ -8,7 +8,7 @@ module Edge : Cell_selector.Cell {
 include Edge;
 
 module Add = {
-  type = {name: string, sc: string, tc: string};
+  type t = {name: string, sc: string, tc: string};
   [@react.component]
     let make = (~updater) => {
       let (state, setState) = {

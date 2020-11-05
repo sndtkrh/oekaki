@@ -24,7 +24,7 @@ let addCoordinate = (setState, name, x, y) => {
   setState( (s) => {
     let cs = s.coordinates;
     if (name === ""
-        || switch(findCoordinate(cs, name)){ | None => true | Some(_) => false }) {
+        || switch(findCoordinate(cs, name)){ | None => false | Some(_) => true }) {
       s
     } else {
       {...s, coordinates: [elm, ...cs]}
