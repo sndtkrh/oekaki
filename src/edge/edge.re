@@ -1,20 +1,71 @@
-type e = {edge_id: string, scoord: string, tcoord: string};
+type direction =
+  | Above
+  | Below
+  | Left
+  | Right
+
+type curve =
+  | Line
+  | Bezier(direction, direction)
+
+let stringToDirection = (s) => {
+  switch (s) {
+  | "a"     => Some(Above)
+  | "above" => Some(Above)
+  | "b"     => Some(Below)
+  | "below" => Some(Below)
+  | "l"     => Some(Left)
+  | "left"  => Some(Left)
+  | "r"     => Some(Right)
+  | "right" => Some(Right)
+  | _       => None
+  }
+};
+
+type e = {
+  edge_id: string,
+  scoord: string,
+  tcoord: string,
+  curve: curve
+};
+
 module Edge : (Cell_selector.Cell with type t = e) = {
   type t = e;
   let name = "edge";
-  let render = (c) => {
-    <div>{React.string(c.edge_id)}</div>
+  let render = (e) => {
+    let s = Printf.sprintf(
+      "(%s) start=(%s) end=(%s) %s",
+      e.edge_id,
+      e.scoord,
+      e.tcoord,
+      switch (e.curve) {
+      | Line => "line"
+      | Bezier(sd, td) => {
+          "bezier"
+        }
+      }
+      );
+    <div>
+        {React.string(s)}
+  </div>
   };
 };
 
 include Edge;
 
 module Add = {
-  type t = {name: string, sname: string, tname: string};
+  type t = {
+    name: string,
+    sname: string,
+    tname: string,
+    sdir: string,
+    tdir: string
+  };
+  let initState = {name: "", sname: "", tname: "", sdir: "", tdir: ""};
   [@react.component]
     let make = (~updater) => {
       let (state, setState) = {
-        React.useState( () => { {name: "", sname: "", tname: ""} })
+        React.useState( () => { initState })
       };
       let handleName = (e) => {
         let a = ReactEvent.Form.target(e)##value;
@@ -28,10 +79,23 @@ module Add = {
         let a = ReactEvent.Form.target(e)##value;
         setState( (st) => {...st, tname: a} );
       };
+      let handleSdir = (e) => {
+        let a = ReactEvent.Form.target(e)##value;
+        setState( (st) => {...st, sdir: a} );
+      };
+      let handleTdir = (e) => {
+        let a = ReactEvent.Form.target(e)##value;
+        setState( (st) => {...st, tdir: a} );
+      };
       let handleSubmit = (e) => {
         ReactEvent.Form.preventDefault(e);
-        updater(state.name, state.sname, state.tname);
-        setState( _ => {name: "", sname: "", tname: ""} );
+        let et =
+          switch (stringToDirection(state.sdir), stringToDirection(state.tdir)) {
+          | (Some(sd), Some(td)) => Bezier(sd, td)
+          | _ => Line
+          };
+        updater(state.name, state.sname, state.tname, et);
+        setState( _ => initState );
       };
       
       <div>
@@ -43,10 +107,14 @@ module Add = {
         {React.string(", start=")}
       <input className="input-name" type_="text" name="sname"
           value={state.sname} onChange={handleSname}/>
-        {React.string(", end=")}
+      <input className="input-name" type_="text" name="sdir"
+          value={state.sdir} onChange={handleSdir}/>
+      {React.string(", end=")}
       <input className="input-name" type_="text" name="tname"
           value={state.tname} onChange={handleTname}/>
-        <input type_="submit" value="add" onClick={_ => ()}/>
+      <input className="input-name" type_="text" name="tdir"
+          value={state.tdir} onChange={handleTdir}/>
+      <input type_="submit" value="add" onClick={_ => ()}/>
       </form>
       </div>
     };
