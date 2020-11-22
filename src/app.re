@@ -15,7 +15,8 @@ requireCSS("./app.css");
       svgx: 500.,
       namePool: AppState.NamePool.empty,
       coordinates: CoordinateSelector.empty,
-      edges: EdgeSelector.empty
+      edges: EdgeSelector.empty,
+      fills: FillSelector.empty
       } );
     };
 
@@ -26,10 +27,12 @@ requireCSS("./app.css");
       <div id="selectors">
         <CoordinateSelector cs={state.coordinates}/>
         <EdgeSelector cs={state.edges}/>
+        <FillSelector cs={state.fills}/>
       </div>
 
       <div id="message">{React.string("message: ")}</div>
       <Coordinate.Add updater={AppState.addCoordinate(setState)}/>
       <Edge.Add updater={AppState.addEdge(setState)}/>
+      <Fill.Add updater={AppState.addFill(setState)}/>
     </div>
   };

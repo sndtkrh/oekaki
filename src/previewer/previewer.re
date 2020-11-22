@@ -11,14 +11,25 @@ let convertP = ((a,b), st) => {
   convert(a, b, st)
 };
 
+let fontSize="20"
+
 let coordToSVG = (state, c) => {
   let (x, y) = convert(c.Coordinate.x, c.Coordinate.y, state);
-  <circle key={c.Coordinate.coordinate_id}
-      cx={Belt.Float.toString(x)}
-    cy={Belt.Float.toString(y)}
-    r={"2"}
-    stroke={"black"}
-    fill={"none"}/>
+  [
+    <circle key={"coord_" ++ c.Coordinate.coordinate_id}
+        cx={Belt.Float.toString(x)}
+      cy={Belt.Float.toString(y)}
+      r={"2"}
+      stroke={"black"}
+      fill={"none"}/>,
+    <text key={"text_" ++ c.Coordinate.coordinate_id}
+        textAnchor="middle"
+        x={Belt.Float.toString(x)}
+      y={Belt.Float.toString(y -. 8.)}
+    fontSize={fontSize}>
+      {React.string(c.coordinate_id)}
+  </text>
+  ]
 };
 
 let distControlPoint = 1.0;
@@ -30,8 +41,7 @@ let controlPoint = (x, y, d) => {
   | Edge.Right => (x +. distControlPoint, y)
   }
 };
-
-let edgeToSVG = (state, e) => {
+let edgeCurveD = (state, e) => {
   let cs = state.coordinates;
   let sname = e.Edge.scoord;
   let tname = e.Edge.tcoord;
@@ -46,20 +56,74 @@ let edgeToSVG = (state, e) => {
   let (sX, sY) = convert(sx, sy, state);
   let (tX, tY) = convert(tx, ty, state);
   switch (e.Edge.curve) {
-  | Edge.Line => {
-      let d = Printf.sprintf("M %f %f L %f %f", sX, sY, tX, tY);
-      <path key={e.Edge.edge_id} d={d} stroke={"black"} fill={"none"}/>
-  };
+  | Edge.Line =>
+    (Printf.sprintf("M %f %f", sX, sY),
+     Printf.sprintf("L %f %f", tX, tY))
   | Edge.Bezier(sd, td) => {
       let (scX, scY) = convertP(controlPoint(sx, sy, sd), state);
       let (tcX, tcY) = convertP(controlPoint(tx, ty, td), state);
-      let d = Printf.sprintf(
-        "M %f %f C %f %f, %f %f, %f %f",
-        sX, sY,
-        scX, scY, tcX, tcY, tX, tY);
-      <path key={e.Edge.edge_id} d={d} stroke={"black"} fill={"none"}/>
+      (Printf.sprintf("M %f %f", sX, sY),
+       Printf.sprintf("C %f %f, %f %f, %f %f", scX, scY, tcX, tcY, tX, tY));
+    }
+  }
+};
+
+let edgeToSVG = (state, e) => {
+  let (m, c) = edgeCurveD(state, e);
+  let d = m ++ c;
+  [
+  <path key={e.Edge.edge_id}
+      id={e.Edge.edge_id} d={d}
+    stroke={"black"}
+    fill={"none"}/>,
+  <text key={"text_" ++ e.Edge.edge_id}
+      textAnchor="middle"
+    fontSize={fontSize} fill="blue" >
+  <textPath key={"textPath_" ++ e.Edge.edge_id}
+            startOffset="50%"
+    xlinkHref={"#" ++ e.Edge.edge_id}>
+    {React.string(e.Edge.edge_id)}
+</textPath>
+    </text>
+  ]
+};
+
+let fillToSVG = (state, fill : Fill.t) => {
+  let d = (edges : list(Edge.t)) => {
+    let rec func = (prevCoordName, es) => {
+      switch (es) {
+      | [] => "z"
+      | [e, ...rest] => {
+          let (_, c) = edgeCurveD(state, e);
+          if (prevCoordName === e.Edge.scoord) {
+            c ++ func(e.Edge.tcoord, rest)
+          } else {
+            switch(findCoordinate(state.coordinates, e.Edge.scoord)) {
+            | Some(c) => {
+                let (cX, cY) = convert(c.x, c.y, state);
+                Printf.sprintf("L %f %f", cX, cY)
+              }
+            | None => "" // cannot happen
+            } ++ c ++ func(e.Edge.tcoord, rest)
+          }
+        }
+      }
     };
+    switch (edges) {
+    | [] => ""
+    | [head, ...rest] => {
+        let (m, c) = edgeCurveD(state, head);
+        m ++ c ++ func(head.Edge.tcoord, rest)
+      }
+    }
   };
+  switch (findEdges(state.edges, fill.edges)) {
+  | Some(edges) => {
+      <path key={fill.fill_id} d={d(edges)}
+          stroke="none" fill={Color.toString(fill.color)} />
+    }
+  | None => { <> </> }
+  }
 };
 
 [@react.component]
@@ -67,10 +131,12 @@ let edgeToSVG = (state, e) => {
     let coords = {
       RR.array( Array.of_list(
       List.concat([
+        //fill
+        List.map(fillToSVG(state), state.fills),
         // coordinate
-        List.map(coordToSVG(state), state.coordinates),
+        List.concat(List.map(coordToSVG(state), state.coordinates)),
         // edge
-        List.map(edgeToSVG(state), state.edges)
+        List.concat(List.map(edgeToSVG(state), state.edges))
       ])
       ))
     };

@@ -41,11 +41,19 @@ module Edge : (Cell_selector.Cell with type t = e) = {
       switch (e.curve) {
       | Line => "line"
       | Bezier(sd, td) => {
-          "bezier"
+          let f = (d) => {
+            switch (d) {
+            | Above => "above"
+            | Below => "below"
+            | Left  => "left"
+            | Right => "right"
+            }
+          }
+          Printf.sprintf("bezier(%s, %s)", f(sd), f(td));
         }
       }
       );
-    <div>
+    <div key={e.edge_id}>
         {React.string(s)}
   </div>
   };
@@ -89,12 +97,12 @@ module Add = {
       };
       let handleSubmit = (e) => {
         ReactEvent.Form.preventDefault(e);
-        let et =
+        let curve =
           switch (stringToDirection(state.sdir), stringToDirection(state.tdir)) {
           | (Some(sd), Some(td)) => Bezier(sd, td)
           | _ => Line
           };
-        updater(state.name, state.sname, state.tname, et);
+        updater(state.name, state.sname, state.tname, curve);
         setState( _ => initState );
       };
       

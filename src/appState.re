@@ -10,6 +10,7 @@ type t = {
   namePool: NamePool.t,
   coordinates: CoordinateSelector.t,
   edges: EdgeSelector.t,
+  fills: FillSelector.t
 };
 
 
@@ -21,6 +22,30 @@ let findCoordinate = (cs, name) => {
     None
   }
 };
+
+let findEdge = (es, name : string) => {
+  let f = (e) => {e.Edge.edge_id === name};
+  if (List.exists (f, es)) {
+    Some(List.find(f, es))
+  } else {
+    None
+  }
+};
+
+let findEdges = (es, names : list(string)) => {
+  let f = (name, l') => {
+    switch(l') {
+    | Some(l) => {
+        switch(findEdge(es, name)) {
+        | Some(e) => Some([e, ...l])
+        | None => None
+        }
+      }
+    | None => None
+    }
+  };
+  List.fold_right(f, names, Some([]));
+}
 
 let addCoordinate = (setState, name, x, y) => {
   setState( (s) => {
@@ -61,4 +86,28 @@ let addEdge = (setState, name, sname, tname, curve) => {
     }
   | _ => s
   }})
+};
+
+let addFill = (setState, name, color, enames) => {
+  setState( (s) => {
+  let np = s.namePool;
+  let es = s.edges;
+  let fs = s.fills;
+  switch(findEdges(es, enames)) {
+  | Some(_edges) => {
+      let nameExists =
+        switch(NamePool.find_opt(name, np)){
+        | Some(_) => true
+        | None => false };
+      if (name === "" || nameExists) {
+        s
+      } else {
+        let newnp = NamePool.add(name, np);
+        let elm : Fill.t = {fill_id: name, color, edges: enames};
+        {...s, namePool: newnp, fills: [elm, ...fs]}
+      }
+    }
+  | _ => s
+  }
+  })
 };
