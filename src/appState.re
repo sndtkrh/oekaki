@@ -77,7 +77,7 @@ let addCoordinate = (setState, name, x, y) => {
     let elm : Coordinate.t = {coordinate_id: name, x: x, y: y};
     if (nameExists) {
       let (left, right) = {
-        let p = (c) => { if (c.Coordinate.coordinate_id === name) {true} else {false} };
+        let p = (c) => {c.Coordinate.coordinate_id === name};
         splitList(p, cs)
       };
       {...s, coordinates: (left @ [elm] @ right)}
@@ -105,7 +105,7 @@ let addEdge = (setState, name, sname, tname, curve) => {
         let elm : Edge.t = {edge_id: name, scoord: sname, tcoord: tname, curve};
         if (nameExists) {
           let (left, right) = {
-            let p = (e) => { if (e.Edge.edge_id === name) {true} else {false} };
+            let p = (e) => {e.Edge.edge_id === name};
             splitList(p, es)
           };
           {...s, edges: left @ [elm] @ right}
@@ -136,7 +136,7 @@ let addFill = (setState, name, color, enames) => {
         let elm : Fill.t = {fill_id: name, color, edges: enames};
         if (nameExists) {
           let (left, right) = {
-            let p = (e) => { if (e.Fill.fill_id === name) {true} else {false} };
+            let p = (e) => {e.Fill.fill_id === name};
             splitList(p, fs)
           };
           {...s, fills: left @ [elm] @ right}
@@ -149,4 +149,42 @@ let addFill = (setState, name, color, enames) => {
   | _ => s
   }
   })
+};
+
+let usedCoordinate = (name, state) => {
+  let a = (b, edge) => {
+    if (b) { true } else {
+      (edge.Edge.scoord === name || edge.Edge.tcoord === name)
+    }
+  };
+  List.fold_left(a, false, state.edges)
+};
+
+let usedEdge = (name, state) => {
+  let a = (b, fill) => {
+    if (b) { true } else {
+      let a' = (b', ename) => {
+        switch (findEdge(state.edges, ename)) {
+        | None => false
+        | Some(edge) =>
+          if (b') { true } else {
+            edge.Edge.edge_id === name
+          }
+        }
+      };
+      List.fold_left(a' , false, fill.Fill.edges);
+    }
+  };
+  List.fold_left(a, false, state.fills)
+}
+let remove = (setState, name) => {
+  setState( (s) => {
+  if (usedCoordinate(name, s) || usedEdge(name, s)) {
+    s
+  } else {
+    let (cl, cr) = splitList((c) => {c.Coordinate.coordinate_id === name}, s.coordinates);
+    let (el, er) = splitList((c) => {c.Edge.edge_id === name}, s.edges);
+    let (fl, fr) = splitList((c) => {c.Fill.fill_id === name}, s.fills);
+    {...s, coordinates: cl @ cr, edges: el @ er, fills: fl @ fr}
+  }})
 };

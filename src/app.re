@@ -34,6 +34,7 @@ requireCSS("./app.css");
       </div>
 
       <div id="message">{React.string("message: ")}</div>
+      <RemoveName updater={AppState.remove(setState)}/>
       <Coordinate.Add updater={AppState.addCoordinate(setState)}/>
       <Edge.Add updater={AppState.addEdge(setState)}/>
       <Fill.Add updater={AppState.addFill(setState)}/>
