@@ -160,7 +160,7 @@ module Add = {
         setState( _ => initState );
       };
       
-      <div className={Edge.name}>
+      <div className={"add" ++ " " ++ Edge.name}>
         <form onSubmit={handleSubmit}>
             {React.string("Edge: ")}
         {React.string("name=")}

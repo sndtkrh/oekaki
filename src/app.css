@@ -77,3 +77,9 @@ textarea {
 .fill {
     background: #9933CC;
 }
+
+.add {
+    height: 30px;
+    display: flex;
+    align-items: center;
+}

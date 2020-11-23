@@ -58,7 +58,7 @@ module Add = {
         };
       };
 
-      <div className={Coordinate.name}>
+      <div className={"add" ++ " " ++ Coordinate.name}>
         <form onSubmit={handleSubmit}>
             {React.string("Coordinate: ")}
         {React.string("name=")}
