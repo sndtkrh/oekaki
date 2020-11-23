@@ -22,7 +22,10 @@ requireCSS("./app.css");
 
     <div id="app">
       <h1>{React.string("Oekaki")}</h1>
-      <Previewer state={state}/>
+      <div id="output">
+        <Previewer state={state}/>
+        <Tikz state={state}/>
+      </div>
 
       <div id="selectors">
         <CoordinateSelector cs={state.coordinates}/>
