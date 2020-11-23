@@ -67,7 +67,7 @@ module Add = {
       <input className="input-num" type_="text" name="x" value={state.x} onChange={handleX}/>
         {React.string(", y=")}
       <input className="input-num" type_="text" name="y" value={state.y} onChange={handleY}/>
-        <input type_="submit" value="add" onClick={_ => ()}/>
+        <input type_="submit" value="add/modify" onClick={_ => ()}/>
       </form>
       </div>
     }

@@ -82,7 +82,7 @@ module Add = {
       <input className="input-name" type_="text" name="ename"
           value={state.ename} onChange={handleEname}/>
       <button onClick={handleAppend}> {React.string("append")} </button>
-      <input type_="submit" value="add" onClick={_ => ()}/>
+      <input type_="submit" value="add/modify" onClick={_ => ()}/>
       {React.string(enamesStr)}
     </form>
       </div>

@@ -13,6 +13,21 @@ type t = {
   fills: FillSelector.t
 };
 
+let splitList = (pred : 'a => bool, l: list('a)) => {
+  let rec f = (left, right) => {
+    switch (right) {
+    | [] => (List.rev(left), [])
+    | [h, ...rest] => {
+        if (pred(h)) {
+          (List.rev(left), rest)
+        } else {
+          f([h, ...left], rest)
+        }
+      }
+    }
+  };
+  f([], l)
+};
 
 let findCoordinate = (cs, name) => {
   let f = (c) => {c.Coordinate.coordinate_id === name};
@@ -45,24 +60,32 @@ let findEdges = (es, names : list(string)) => {
     }
   };
   List.fold_right(f, names, Some([]));
-}
+};
 
 let addCoordinate = (setState, name, x, y) => {
   setState( (s) => {
-    let cs = s.coordinates;
-    let np = s.namePool;
-    let nameExists =
-      switch(NamePool.find_opt(name, np)){
-      | Some(_) => true
-      | None => false };
-    if (name === "" || nameExists) {
-      s
+  let cs = s.coordinates;
+  let np = s.namePool;
+  let nameExists =
+    switch(NamePool.find_opt(name, np)){
+    | Some(_) => true
+    | None => false
+    };
+  if (name === "" ) {
+    s
+  } else {
+    let elm : Coordinate.t = {coordinate_id: name, x: x, y: y};
+    if (nameExists) {
+      let (left, right) = {
+        let p = (c) => { if (c.Coordinate.coordinate_id === name) {true} else {false} };
+        splitList(p, cs)
+      };
+      {...s, coordinates: (left @ [elm] @ right)}
     } else {
       let newnp = NamePool.add(name, np);
-      let elm : Coordinate.t = {coordinate_id: name, x: x, y: y};
       {...s, namePool: newnp, coordinates: [elm, ...cs]}
     }
-  });
+  }});
 };
 
 let addEdge = (setState, name, sname, tname, curve) => {
@@ -76,12 +99,20 @@ let addEdge = (setState, name, sname, tname, curve) => {
         switch(NamePool.find_opt(name, np)){
         | Some(_) => true
         | None => false };
-      if (name === "" || nameExists) {
+      if (name === "") {
         s
-      } else {
-        let newnp = NamePool.add(name, np);
+      } else{
         let elm : Edge.t = {edge_id: name, scoord: sname, tcoord: tname, curve};
-        {...s, namePool: newnp, edges: [elm, ...es]}
+        if (nameExists) {
+          let (left, right) = {
+            let p = (e) => { if (e.Edge.edge_id === name) {true} else {false} };
+            splitList(p, es)
+          };
+          {...s, edges: left @ [elm] @ right}
+        } else {
+          let newnp = NamePool.add(name, np);
+          {...s, namePool: newnp, edges: [elm, ...es]}
+        }
       }
     }
   | _ => s
@@ -99,12 +130,20 @@ let addFill = (setState, name, color, enames) => {
         switch(NamePool.find_opt(name, np)){
         | Some(_) => true
         | None => false };
-      if (name === "" || nameExists) {
+      if (name === "") {
         s
-      } else {
-        let newnp = NamePool.add(name, np);
+      }else {
         let elm : Fill.t = {fill_id: name, color, edges: enames};
-        {...s, namePool: newnp, fills: [elm, ...fs]}
+        if (nameExists) {
+          let (left, right) = {
+            let p = (e) => { if (e.Fill.fill_id === name) {true} else {false} };
+            splitList(p, fs)
+          };
+          {...s, fills: left @ [elm] @ right}
+        } else {
+          let newnp = NamePool.add(name, np);
+          {...s, namePool: newnp, fills: [elm, ...fs]}
+        }
       }
     }
   | _ => s

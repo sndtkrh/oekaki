@@ -122,7 +122,7 @@ module Add = {
           value={state.tname} onChange={handleTname}/>
       <input className="input-name" type_="text" name="tdir"
           value={state.tdir} onChange={handleTdir}/>
-      <input type_="submit" value="add" onClick={_ => ()}/>
+      <input type_="submit" value="add/modify" onClick={_ => ()}/>
       </form>
       </div>
     };
