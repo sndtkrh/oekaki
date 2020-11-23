@@ -22,6 +22,15 @@ let stringToDirection = (s) => {
   }
 };
 
+let dirToString = (d) => {
+  switch (d) {
+  | Above => "above"
+  | Below => "below"
+  | Left  => "left"
+  | Right => "right"
+  }
+};
+
 type e = {
   edge_id: string,
   scoord: string,
@@ -66,10 +75,28 @@ module Add = {
     name: string,
     sname: string,
     tname: string,
-    sdir: string,
-    tdir: string
+    sdir: option(direction),
+    tdir: option(direction)
   };
-  let initState = {name: "", sname: "", tname: "", sdir: "", tdir: ""};
+  let select = (selectedDir, dirOnChange) => {
+    let f = (lineOrBezier) => {
+      switch(lineOrBezier) {
+      | None => "-"
+      | Some(d) => dirToString(d)
+      }
+    };
+    let opt = (c) => {
+      <option value={f(c)}> {React.string(f(c))} </option>
+    };
+    <select value={f(selectedDir)} onChange={dirOnChange}>
+        {opt(None)}
+      {opt(Some(Above))}
+      {opt(Some(Below))}
+      {opt(Some(Left))}
+      {opt(Some(Right))}
+    </select>
+  };
+  let initState = {name: "", sname: "", tname: "", sdir: None, tdir: None};
   [@react.component]
     let make = (~updater) => {
       let (state, setState) = {
@@ -87,18 +114,36 @@ module Add = {
         let a = ReactEvent.Form.target(e)##value;
         setState( (st) => {...st, tname: a} );
       };
-      let handleSdir = (e) => {
-        let a = ReactEvent.Form.target(e)##value;
-        setState( (st) => {...st, sdir: a} );
+      let sdirOnChange = (e) => {
+        ReactEvent.Form.preventDefault(e);
+        let dirStr = ReactEvent.Form.target(e)##value;
+        setState( (s) => {
+          let (sdir, tdir) = {
+            switch (stringToDirection(dirStr)) {
+            | Some(d) => (Some(d), s.tdir)
+            | None => (None, None)
+            }
+          };
+          {...s, sdir, tdir}
+        });
       };
-      let handleTdir = (e) => {
-        let a = ReactEvent.Form.target(e)##value;
-        setState( (st) => {...st, tdir: a} );
+      let tdirOnChange = (e) => {
+        ReactEvent.Form.preventDefault(e);
+        let dirStr = ReactEvent.Form.target(e)##value;
+        setState( (s) => {
+          let (sdir, tdir) = {
+            switch (stringToDirection(dirStr)) {
+            | Some(d) => (s.sdir, Some(d))
+            | None => (None, None)
+            }
+          };
+          {...s, sdir, tdir}
+        });
       };
       let handleSubmit = (e) => {
         ReactEvent.Form.preventDefault(e);
         let curve =
-          switch (stringToDirection(state.sdir), stringToDirection(state.tdir)) {
+          switch (state.sdir, state.tdir) {
           | (Some(sd), Some(td)) => Bezier(sd, td)
           | _ => Line
           };
@@ -115,13 +160,11 @@ module Add = {
         {React.string(", start=")}
       <input className="input-name" type_="text" name="sname"
           value={state.sname} onChange={handleSname}/>
-      <input className="input-name" type_="text" name="sdir"
-          value={state.sdir} onChange={handleSdir}/>
+        {select(state.sdir, sdirOnChange)}
       {React.string(", end=")}
       <input className="input-name" type_="text" name="tname"
           value={state.tname} onChange={handleTname}/>
-      <input className="input-name" type_="text" name="tdir"
-          value={state.tdir} onChange={handleTdir}/>
+        {select(state.tdir, tdirOnChange)}
       <input type_="submit" value="add/modify" onClick={_ => ()}/>
       </form>
       </div>
