@@ -30,6 +30,14 @@ let fromEdge' = (e : Edge.t) => {
      Printf.sprintf(" %s (%s)", fromDirs(d1, d2), e.tcoord);
    })
 };
+let fromEdge = (e : Edge.t) => {
+  if (e.draw) {
+    let (s, t) = fromEdge'(e);
+    Printf.sprintf("\\draw %s;", s ++ t);
+  } else {
+    ""
+  }
+};
 
 let fromFill = (state, fill : Fill.t) => {
   let rec func = (prevCoord, edges) => {
@@ -63,15 +71,17 @@ let fromFill = (state, fill : Fill.t) => {
 
 [@react.component]
   let make = (~state) => {
-    let coordinates =
+    let coordinatesTikz =
       List.map(fromCoordinate, state.coordinates);
-    let fills =
+    let fillsTikz =
       List.map(fromFill(state), state.fills);
+    let edgesTikz =
+      List.filter( (str) => {!(str === "")}, List.map(fromEdge, state.edges));
     let tikz = {
-      String.concat("\n", [beginTikz] @ coordinates @ fills @ [endTikz])
+      String.concat("\n", [beginTikz] @ coordinatesTikz @ fillsTikz @ edgesTikz @ [endTikz])
     };
     
     <div id="">
       <textarea className="tikz" value={tikz} />
     </div>
-  }
+  };

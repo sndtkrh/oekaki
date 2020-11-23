@@ -88,7 +88,7 @@ let addCoordinate = (setState, name, x, y) => {
   }});
 };
 
-let addEdge = (setState, name, sname, tname, curve) => {
+let addEdge = (setState, name, draw, sname, tname, curve) => {
   setState( (s) => {
   let np = s.namePool;
   let es = s.edges;
@@ -102,7 +102,7 @@ let addEdge = (setState, name, sname, tname, curve) => {
       if (name === "") {
         s
       } else{
-        let elm : Edge.t = {edge_id: name, scoord: sname, tcoord: tname, curve};
+        let elm : Edge.t = {edge_id: name, draw, scoord: sname, tcoord: tname, curve};
         if (nameExists) {
           let (left, right) = {
             let p = (e) => {e.Edge.edge_id === name};

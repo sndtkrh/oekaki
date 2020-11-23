@@ -35,7 +35,8 @@ type e = {
   edge_id: string,
   scoord: string,
   tcoord: string,
-  curve: curve
+  curve: curve,
+  draw: bool
 };
 
 module Edge : (Cell_selector.Cell with type t = e) = {
@@ -43,12 +44,12 @@ module Edge : (Cell_selector.Cell with type t = e) = {
   let name = "edge";
   let render = (e) => {
     let s = Printf.sprintf(
-      "(%s) start=(%s) end=(%s) %s",
+      "(%s) draw=%s (%s) %s (%s)",
       e.edge_id,
+      if (e.draw) {"yes"} else {"no"},
       e.scoord,
-      e.tcoord,
       switch (e.curve) {
-      | Line => "line"
+      | Line => "--"
       | Bezier(sd, td) => {
           let f = (d) => {
             switch (d) {
@@ -58,9 +59,10 @@ module Edge : (Cell_selector.Cell with type t = e) = {
             | Right => "right"
             }
           }
-          Printf.sprintf("bezier(%s, %s)", f(sd), f(td));
+          Printf.sprintf("~(%s, %s)", f(sd), f(td));
         }
-      }
+      },
+      e.tcoord
       );
     <div key={e.edge_id}>
         {React.string(s)}
@@ -73,6 +75,7 @@ include Edge;
 module Add = {
   type t = {
     name: string,
+    draw: bool,
     sname: string,
     tname: string,
     sdir: option(direction),
@@ -96,7 +99,7 @@ module Add = {
       {opt(Some(Right))}
     </select>
   };
-  let initState = {name: "", sname: "", tname: "", sdir: None, tdir: None};
+  let initState = {name: "", draw:true, sname: "", tname: "", sdir: None, tdir: None};
   [@react.component]
     let make = (~updater) => {
       let (state, setState) = {
@@ -114,6 +117,16 @@ module Add = {
         let a = ReactEvent.Form.target(e)##value;
         setState( (st) => {...st, tname: a} );
       };
+      let drawOnChange = (e) => {
+        ReactEvent.Form.preventDefault(e);
+        let draw = ReactEvent.Form.target(e)##value;
+        setState( (s) => {
+          switch (draw) {
+          | "yes" => {...s, draw:true}  // yes
+          | _     => {...s, draw:false} // no
+          }
+        })
+      }
       let sdirOnChange = (e) => {
         ReactEvent.Form.preventDefault(e);
         let dirStr = ReactEvent.Form.target(e)##value;
@@ -147,7 +160,7 @@ module Add = {
           | (Some(sd), Some(td)) => Bezier(sd, td)
           | _ => Line
           };
-        updater(state.name, state.sname, state.tname, curve);
+        updater(state.name, state.draw, state.sname, state.tname, curve);
         setState( _ => initState );
       };
       
@@ -157,6 +170,11 @@ module Add = {
           {React.string("name=")}
       <input className="input-name" type_="text" name="name"
           value={state.name} onChange={handleName}/>
+        {React.string(" draw:")}
+      <select value={if(state.draw) {"yes"} else {"no"}} onChange={drawOnChange}>
+        <option value="yes">{React.string("yes")}</option>
+        <option value="no" >{React.string("no")} </option>
+      </select>
         {React.string(", start=")}
       <input className="input-name" type_="text" name="sname"
           value={state.sname} onChange={handleSname}/>

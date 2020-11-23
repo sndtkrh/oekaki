@@ -74,7 +74,7 @@ let edgeToSVG = (state, e) => {
   [
   <path key={e.Edge.edge_id}
       id={e.Edge.edge_id} d={d}
-    stroke={"black"}
+    stroke={if (e.draw) {"black"} else {"lightseagreen"} }
     fill={"none"}/>,
   <text key={"text_" ++ e.Edge.edge_id}
       textAnchor="middle"
