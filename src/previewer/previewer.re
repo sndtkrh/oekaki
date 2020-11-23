@@ -32,7 +32,7 @@ let coordToSVG = (state, c) => {
   ]
 };
 
-let distControlPoint = 1.0;
+let distControlPoint = 0.5;
 let controlPoint = (x, y, d) => {
   switch (d) {
   | Edge.Above => (x, y +. distControlPoint)

@@ -72,7 +72,7 @@ module Add = {
         setState( _ => initState );
       };
 
-      <div>
+      <div className={Fill.name}>
         <form onSubmit={handleSubmit}>
             {React.string("Fill: ")}
         {React.string("name=")}

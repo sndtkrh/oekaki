@@ -10,13 +10,9 @@ type curve =
 
 let stringToDirection = (s) => {
   switch (s) {
-  | "a"     => Some(Above)
   | "above" => Some(Above)
-  | "b"     => Some(Below)
   | "below" => Some(Below)
-  | "l"     => Some(Left)
   | "left"  => Some(Left)
-  | "r"     => Some(Right)
   | "right" => Some(Right)
   | _       => None
   }
@@ -164,7 +160,7 @@ module Add = {
         setState( _ => initState );
       };
       
-      <div>
+      <div className={Edge.name}>
         <form onSubmit={handleSubmit}>
             {React.string("Edge: ")}
         {React.string("name=")}

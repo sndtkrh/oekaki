@@ -82,6 +82,6 @@ let fromFill = (state, fill : Fill.t) => {
     };
     
     <div id="">
-      <textarea className="tikz" value={tikz} />
+      <textarea className="tikz" value={tikz} onChange={_ => ()}/>
     </div>
   };

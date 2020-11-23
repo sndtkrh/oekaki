@@ -12,7 +12,7 @@ module MakeCellSelector(C : Cell) = {
     let make = (~cs) => {
       <div className="selector">
         <div className="selector-header">{React.string(C.name)}</div>
-        <div className="overflow-y">
+        <div className={"overflow-y" ++ " " ++ C.name}>
           <>{
             ReasonReact.array(
             Array.of_list(

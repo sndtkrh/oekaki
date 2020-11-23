@@ -32,6 +32,7 @@ textarea {
     resize: horizontal;
     height: 300px;
     width: 200px;
+    background: #CCCCCC;
 }
 
 .overflow-y {
@@ -63,4 +64,16 @@ textarea {
 }
 .input-name {
     width: 50px;
+}
+
+.coordinate {
+    background: #CC9933;
+}
+
+.edge {
+    background: #33CC99;
+}
+
+.fill {
+    background: #9933CC;
 }
