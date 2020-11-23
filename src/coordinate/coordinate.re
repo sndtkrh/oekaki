@@ -59,16 +59,16 @@ module Add = {
       };
 
       <div>
-          {React.string("Add coordinate: ")}
-      <form onSubmit={handleSubmit}>
-          {React.string("name=")}
-          <input className="input-name" type_="text" name="name" value={state.name} onChange={handleName} />
+        <form onSubmit={handleSubmit}>
+            {React.string("Coordinate: ")}
+        {React.string("name=")}
+      <input className="input-name" type_="text" name="name" value={state.name} onChange={handleName} />
         {React.string(", x=")}
       <input className="input-num" type_="text" name="x" value={state.x} onChange={handleX}/>
         {React.string(", y=")}
       <input className="input-num" type_="text" name="y" value={state.y} onChange={handleY}/>
-        <input type_="submit" value="add/modify" onClick={_ => ()}/>
-      </form>
-      </div>
+      <input type_="submit" value="add/modify" onClick={_ => ()}/>
+    </form>
+  </div>
     }
 };

@@ -165,9 +165,9 @@ module Add = {
       };
       
       <div>
-          {React.string("Add edge: ")}
-      <form onSubmit={handleSubmit}>
-          {React.string("name=")}
+        <form onSubmit={handleSubmit}>
+            {React.string("Edge: ")}
+        {React.string("name=")}
       <input className="input-name" type_="text" name="name"
           value={state.name} onChange={handleName}/>
         {React.string(" draw:")}
@@ -175,16 +175,16 @@ module Add = {
         <option value="yes">{React.string("yes")}</option>
         <option value="no" >{React.string("no")} </option>
       </select>
-        {React.string(", start=")}
+      {React.string(", start=")}
       <input className="input-name" type_="text" name="sname"
           value={state.sname} onChange={handleSname}/>
         {select(state.sdir, sdirOnChange)}
-      {React.string(", end=")}
+        {React.string(", end=")}
       <input className="input-name" type_="text" name="tname"
           value={state.tname} onChange={handleTname}/>
         {select(state.tdir, tdirOnChange)}
       <input type_="submit" value="add/modify" onClick={_ => ()}/>
-      </form>
-      </div>
+    </form>
+  </div>
     };
 };

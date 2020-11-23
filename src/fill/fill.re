@@ -73,9 +73,9 @@ module Add = {
       };
 
       <div>
-          {React.string("Add fill: ")}
-      <form onSubmit={handleSubmit}>
-          {React.string("name=")}
+        <form onSubmit={handleSubmit}>
+            {React.string("Fill: ")}
+        {React.string("name=")}
       <input className="input-name" type_="text" name="name"
           value={state.name} onChange={handleName}/>
         {Color.select(state.color, colorOnChange)}
@@ -83,8 +83,8 @@ module Add = {
           value={state.ename} onChange={handleEname}/>
       <button onClick={handleAppend}> {React.string("append")} </button>
       <input type_="submit" value="add/modify" onClick={_ => ()}/>
-      {React.string(enamesStr)}
+        {React.string(enamesStr)}
     </form>
-      </div>
+  </div>
     };
 };

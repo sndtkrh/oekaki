@@ -19,11 +19,11 @@ let initState = {name: ""};
     };
 
     <div>
-        {React.string("Delete")}
       <form onSubmit={handleSubmit}>
-        <input className="input-name" type_="text" name="name"
-            value={state.name} onChange={handleName}/>
-      <input type_="submit" value="delete" onClick={_ => ()}/>
-      </form>
-    </div>
-  }
+          {React.string("Remove: ")}
+    <input className="input-name" type_="text" name="name"
+        value={state.name} onChange={handleName}/>
+    <input type_="submit" value="remove" onClick={_ => ()}/>
+  </form>
+</div>
+  };
