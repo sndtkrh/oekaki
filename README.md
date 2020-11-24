@@ -1,6 +1,6 @@
 # Oekaki
 
-A string diagram editor
+[Oekaki](https://sndtkrh.github.io/oekaki/build/) is a string diagram editor.
 
 ## Dependency
 - Node.js >= v12.18
