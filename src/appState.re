@@ -47,19 +47,21 @@ let findEdge = (es, name : string) => {
   }
 };
 
-let findEdges = (es, names : list(string)) => {
-  let f = (name, l') => {
+let findEdges = (es, edgeNames : list((string, Fill.edgeDir)) ) => {
+  let f = ((name, edir), l') => {
     switch(l') {
     | Some(l) => {
         switch(findEdge(es, name)) {
-        | Some(e) => Some([e, ...l])
+        | Some(e) => {
+            Some([Fill.rotateEdge(edir, e), ...l])
+          }
         | None => None
         }
       }
     | None => None
     }
   };
-  List.fold_right(f, names, Some([]));
+  List.fold_right(f, edgeNames, Some([]));
 };
 
 let addCoordinate = (setState, name, x, y) => {
@@ -119,7 +121,7 @@ let addEdge = (setState, name, draw, sname, tname, curve) => {
   }})
 };
 
-let addFill = (setState, name, color, enames) => {
+let addFill = (setState, name: string, color: Color.t, enames: list((string, Fill.edgeDir))) => {
   setState( (s) => {
   let np = s.namePool;
   let es = s.edges;
@@ -163,7 +165,7 @@ let usedCoordinate = (name, state) => {
 let usedEdge = (name, state) => {
   let a = (b, fill) => {
     if (b) { true } else {
-      let a' = (b', ename) => {
+      let a' = (b', (ename, _edir)) => {
         switch (findEdge(state.edges, ename)) {
         | None => false
         | Some(edge) =>
@@ -172,7 +174,7 @@ let usedEdge = (name, state) => {
           }
         }
       };
-      List.fold_left(a' , false, fill.Fill.edges);
+      List.fold_left(a', false, fill.Fill.edges);
     }
   };
   List.fold_left(a, false, state.fills)
