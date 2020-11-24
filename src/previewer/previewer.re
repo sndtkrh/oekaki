@@ -11,7 +11,7 @@ let convertP = ((a,b), st) => {
   convert(a, b, st)
 };
 
-let fontSize="20"
+let fontSize="14"
 
 let coordToSVG = (state, c) => {
   let (x, y) = convert(c.Coordinate.x, c.Coordinate.y, state);

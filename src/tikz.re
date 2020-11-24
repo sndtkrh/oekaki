@@ -1,5 +1,5 @@
 open AppState;
-let beginTikz = "\\begin{tikzpicture}";
+let beginTikz = "\\begin{tikzpicture}[baseline=0.5cm, x=0.5cm, y=0.5cm]";
 let endTikz = "\\end{tikzpicture}";
 
 let fromCoordinate = (c) => {
