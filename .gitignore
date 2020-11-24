@@ -1,0 +1,8 @@
+lib
+.merlin
+node_modules
+src
+
+!.gitignore
+!README.md
+!build
